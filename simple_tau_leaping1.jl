@@ -1,19 +1,17 @@
-using Random
-
-function ssa1(n, k, T)
+function basic_tau_leaping1(n, k, T, τ = 10^-5)
     """
     Perform the improved SSA for the reaction S -> ∅ with rate k*S(t).
 
     Arguments:
       - n: Initial number of molecules of A (A(0))
-      - k:  Rate constant
+      - k: the rate of the reaction
+      - τ: the time leaping
       - T:  Final time to stop simulation
 
     Returns:
       - t_array: Vector of times at which events (or final check) occurred
       - S_array: Vector of S(t) values corresponding to t_array
     """
-    
     # Initialize time and molecule count
     t = 0.0
     S = n
@@ -24,21 +22,13 @@ function ssa1(n, k, T)
     
     # Main loop: continue until no molecules left or time exceeds T
     while S > 0 && t < T
-        # 1) Generate random number r from the exp(1) dis
-        r = randexp()
-        
-        # 2) Compute tau = 1/(A*k)*ln(1/r)
-        #    Note: S*k must be > 0; if S=0, we won't enter this loop
-        tau = r / (S*k) 
-        
-        # 3) Advance time
-        t += tau
-        
+        # 1) Calculate a_0, ξ, and τ
+        a0 = k*S
+        leap = rand(Poisson(a0 * τ))   # Poisson leap
+        S -= leap
+        t += τ
         # Check if the new time is still within T
         if t <= T
-            # 4) Decrement the molecule count by 1
-            S -= 1
-            
             # Save the new state. Each time we update t and S, we append them to t_vec and S_vec:
             push!(t_vec, t)
             push!(S_vec, S)
@@ -49,6 +39,5 @@ function ssa1(n, k, T)
             break
         end
     end
-    
     return t_vec, S_vec
 end

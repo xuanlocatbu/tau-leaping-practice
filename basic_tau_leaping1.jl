@@ -19,29 +19,31 @@ function basic_tau_leaping1(n, k, T, ϵ = 0.05)
     # Store the time and S(t) in arrays for plotting or analysis
     t_vec = Float64[t]
     S_vec = [S]
+    τ = 10^-5
 
     # Main loop: continue until no molecules left or time exceeds T
     while S > 0 && t < T
         # 1) Calculate a_0, ξ, and τ
         a0 = k*S
-        ξ = -1*S 
-        τ = (ϵ*a0)/(ξ*k)
+        ξ = -1*S
+        τ = (ϵ*a0)/abs(ξ*k)
+        
         if τ < 2/a0
           τ = randexp() / a0   # exact waiting-time
-          if t + τ > T                   # overshoots horizon → stop
+          if t + τ > T                   
               break
           end
           S -= 1 
         else
+        
           # 2) Compute the leap
-          leap = rand(Poisson(a0 * τ))   # Poisson leap
-          leap = min(leap, S)               # keep state non-negative
-          S -= leap
+        leap = rand(Poisson(a0 * τ))   # Poisson leap
+        S -= leap
         end
         t += τ
         # Check if the new time is still within T
         if t <= T
-            # Save the new state. Each time we update t anf A, we append them to t_vec and A_vec:
+            # Save the new state. Each time we update t and S, we append them to t_vec and S_vec:
             push!(t_vec, t)
             push!(S_vec, S)
         else

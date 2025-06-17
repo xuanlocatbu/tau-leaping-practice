@@ -25,10 +25,10 @@ function mid_tau_leaping1(n, k, T, ϵ = 0.05)
         # 1) Calculate a_0, ξ, and τ
         a0 = k*S
         ξ = -1*S 
-        τ = (ϵ*a0)/(ξ*k)
+        τ = (ϵ*a0)/abs(ξ*k)
         if τ < 2/a0
             τ = randexp() / a0   # exact waiting-time
-            if t + τ > T                   # overshoots horizon → stop
+            if t + τ > T                  
                 break
             end
             S -= 1 
@@ -38,13 +38,12 @@ function mid_tau_leaping1(n, k, T, ϵ = 0.05)
             S_new = S + fld(τ_hat, 2) 
             # 3) Compute the leap
             leap = rand(Poisson(S_new*τ))   # Poisson leap
-            leap = min(leap, S)               # keep state non-negative
             S -= leap
         end
         t += τ
         # Check if the new time is still within T
         if t <= T
-            # Save the new state. Each time we update t anf A, we append them to t_vec and A_vec:
+            # Save the new state. Each time we update t and S, we append them to t_vec and S_vec:
             push!(t_vec, t)
             push!(S_vec, S)
         else
