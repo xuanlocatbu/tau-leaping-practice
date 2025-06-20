@@ -5,7 +5,7 @@ function ssa1(n, k, T)
     Perform the improved SSA for the reaction S -> ∅ with rate k*S(t).
 
     Arguments:
-      - n: Initial number of molecules of A (A(0))
+      - n: Initial number of molecules of S (S(0))
       - k:  Rate constant
       - T:  Final time to stop simulation
 

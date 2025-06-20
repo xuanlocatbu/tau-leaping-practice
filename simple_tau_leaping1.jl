@@ -1,4 +1,4 @@
-function basic_tau_leaping1(n, k, T, τ = 10^-5)
+function basic_tau_leaping1(n, k, T, τ)
     """
     Perform the improved SSA for the reaction S -> ∅ with rate k*S(t).
 
@@ -15,10 +15,12 @@ function basic_tau_leaping1(n, k, T, τ = 10^-5)
     # Initialize time and molecule count
     t = 0.0
     S = n
+    save_idx = 1
     
-    # Store the time and S(t) in arrays for plotting or analysis
-    t_vec = Float64[t]
-    S_vec = [S]
+    # Store the timeS and S(t) in arrays for plotting or analysis
+    t_vec = 0:0.1:T
+    S_vec = zeros(length(t_vec))
+    S_vec[1] = S
     
     # Main loop: continue until no molecules left or time exceeds T
     while S > 0 && t < T
@@ -28,12 +30,12 @@ function basic_tau_leaping1(n, k, T, τ = 10^-5)
         S -= leap
         t += τ
         # Check if the new time is still within T
-        if t <= T
-            # Save the new state. Each time we update t and S, we append them to t_vec and S_vec:
-            push!(t_vec, t)
-            push!(S_vec, S)
-        else
-            push!(t_vec,T) #adding the last time!
+        if times[save_idx+1] == t
+          save_idx += 1
+          S_vec[save_idx] = S
+        end
+
+        if t > T
             push!(S_vec,S)
             # If we've passed T, we stop; 
             break
