@@ -1,11 +1,11 @@
 using Random
 
-function ssa1(nA, nB, nC, k1, k2, k3, k4, k5, k6, T)
+function ssa2(nA, nB, nC, k1, k2, k3, k4, k5, k6, T)
   """
   Perform the improved SSA for the reaction:
   A + B <-> C with rate k1 ,k2.
-  B <-> ∅ with rate k3, k4.
-  A <-> ∅ with rate k5, k6.
+  A <-> ∅ with rate k3, k4.
+  B <-> ∅ with rate k5, k6.
 
   Arguments:
     - nA, nB, nC: Initial number of molecules of A (A(0))
@@ -36,18 +36,18 @@ function ssa1(nA, nB, nC, k1, k2, k3, k4, k5, k6, T)
   # Main loop: continue until no molecules left or time exceeds T
   while nA >= 0 && nB >= 0 && nC >= 0 && t < T
     # 1) Generate random number r from the exp(1) dis
-    r = randexp()
+    r1 = randexp()
         
     # 2) Accumulative a0 
     a0[1] = k1*nA*nB
-    a0[2] = a[1] + k2*nC
-    a0[3] = a[2] + k3*nA
-    a0[4] = a[3] + k4
-    a0[5] = a[4] + k5*nB
-    a0[6] = a[5] + k6
+    a0[2] = a0[1] + k2*nC
+    a0[3] = a0[2] + k3*nA
+    a0[4] = a0[3] + k4
+    a0[5] = a0[4] + k5*nB
+    a0[6] = a0[5] + k6
 
     # Compute tau
-    tau = a0[6] / (S*k) 
+    tau = r1 / a0[6]
         
     # 3) Advance time
     t += tau
@@ -81,7 +81,7 @@ function ssa1(nA, nB, nC, k1, k2, k3, k4, k5, k6, T)
       else
         nB += 1
       end
-      push!(t_vec,T) #adding the last time!
+      push!(t_vec, t) 
       push!(A_vec, nA)
       push!(B_vec, nB)
       push!(C_vec, nC)

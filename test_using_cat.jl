@@ -1,15 +1,12 @@
 using Catalyst, Plots, Distributions
 include("ssa1.jl")
 include("get_value_at.jl")
-include("simple_tau_leaping1.jl")
 
 S0 = 10^5
 k = 1.0 # Rate constant
 T = 6.0 # Final time to stop simulation
 
-sim = 1000 # Number of simulation
-
-# How to simulate network iSn Catalyst 
+# How to simulate network in Catalyst 
 degrad = @reaction_network begin
     r, S --> ∅
 end
@@ -23,6 +20,8 @@ jinput = JumpInputs(degrad, init, tspan, para)
 jprob = JumpProblem(jinput; save_positions = (false, false)) #this means that only return the first time [0.0,6.0] and position [100000,225] 
 
 """
+# First approach: Compare based on times
+sim = 1000 # Number of simulation
 catalyst_mean = zeros(length(times))
 for i in 1:sim
      tempcat = solve(jprob; saveat = times) #save at desired times, used with save_positions
@@ -51,7 +50,7 @@ pic1 = plot(times, error,
 )
 """
 
-"""
+
 # Second approach: compare depends on simulation
 simulations = 100:100:2000
 err = zeros(length(simulations))
@@ -78,8 +77,8 @@ pic2 = plot(simulations, err,
      title = "Maximum error between SSA and Catalyst",
      label = "Error", legend = :outerright
 )
-"""
 
+"""
 # Test comparing catalyst with itself
 simulations = 100:100:2000
 err = zeros(length(simulations))
@@ -105,9 +104,15 @@ pic3 = plot(simulations, err,
      title = "Maximum error between Catalyst and Catalyst",
      label = "Error", legend = :outerright
 )
-
-# compare time vs simulation, run enough simulation vs time so that catalyst and code agree
+"""
+#Check convergence: e(N) ~ 1 / sqrt(N) => log(e(N)) ~ -1/2 * log(N) + b
+x = log2.(simulations)
+y = log2.(err)
+A = [ones(length(x)) x]
+(intercept, slope) = A \ y
+slope = abs(slope)
+println("Estimated slope: ", slope)
 
 #display(pic1)
 #display(pic2)
-display(pic3)
+#display(pic3)
