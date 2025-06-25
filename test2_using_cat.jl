@@ -19,8 +19,8 @@ times = 0:0.0001:T
 # How to simulate network in Catalyst
 """
   A + B <-> C with rate k1 ,k2.
-  B <-> ∅ with rate k3, k4.
-  A <-> ∅ with rate k5, k6.
+  A <-> ∅ with rate k3, k4.
+  B <-> ∅ with rate k5, k6.
 """
 process = @reaction_network begin
     (r1, r2), A + B <--> C
